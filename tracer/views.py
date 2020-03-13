@@ -67,7 +67,11 @@ def register(request):
         form = RegisterForm(data=request.POST)
         code = request.POST.get('code')
         conn = get_redis_connection("default")
-        value = conn.get(request.POST.get('mobile'))
+        try:
+            value = conn.get(request.POST.get('mobile_phone'))
+        except Exception:
+            return HttpResponse('验证码已失效')
+            
         if code == value.decode('utf-8'):
             if form.is_valid():
                 form.save()
@@ -75,3 +79,6 @@ def register(request):
             return render(request, 'register.html', {'form': form})
         else:
             return HttpResponse('验证码错误')
+
+def upLoad(request):
+    return render(request, 'upload.html')
