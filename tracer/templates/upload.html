@@ -19,7 +19,7 @@
     <div class="container">
         <div class="input-group mb-3">
             <div class="custom-file">
-                <input type="file" class="custom-file-input" id="videoFile">
+                <input type="file" class="custom-file-input" id="videoFile" multiple="multiple">
                 <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
             </div>
             <div class="input-group-append">
@@ -36,37 +36,41 @@
     <script src="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <script type="text/javascript"  src="/static/js/cos-js-sdk-v5.js"></script>
     <script type="text/javascript">
-        const Bucket = 'saas-1300930680';
-        const Region = 'ap-beijing';     /* 存储桶所在地域，必须字段 */
-        const appid = 1300930680;
-        const SecretId = 'AKIDiIiYCe1u32BEcrI3at1ymcw54pTs2C7o';
-        const SecretKey = 'c4NWbZLsGQO8hsh6MODwjokZEfliU5RA';
+        const Bucket = 'saas-1300340680';
+        const Region = 'beijing';     /* 存储桶所在地域，必须字段 */
+        const appid = 1300930asd680;
+        const SecretId = 'AKIDiIiYasCe1u32BEcrI3at1ymcw54pTs2C7o';
+        const SecretKey = 'c4NWbZLdsGQO8hsh6MODwjokZEasdfliU5RA';
         // 初始化实例
         let cos = new COS({
             SecretId: SecretId,
             SecretKey: SecretKey,
         });
         function upload() {
-            var file = document.getElementById('videoFile').files[0];
-            cos.putObject({
-                Bucket: Bucket, /* 必须 */
-                Region: Region,     /* 存储桶所在地域，必须字段 */
-                Key: file.name,              /* 必须 */
-                StorageClass: 'STANDARD',
-                Body: file, // 上传文件对象
-                onProgress: function(progressData) {
-                    if (!$('.progress')[0]) {
-                        $('<div class="progress">\
-  <div class="progress-bar progress-bar-striped" id="progress-bar" role="progressbar"aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div></div>').insertAfter('.input-group');
+            var files = document.getElementById('videoFile').files;
+            for (let i=0; i < files.length; i++) {
+                file = files[i]
+                cos.putObject({
+                    Bucket: Bucket, /* 必须 */
+                    Region: Region,     /* 存储桶所在地域，必须字段 */
+                    Key: file.name,              /* 必须 */
+                    StorageClass: 'STANDARD',
+                    Body: file, // 上传文件对象
+                    onProgress: function(progressData) {
+                        console.log(progressData)
+                        if (!$('#progress-bar')) {
+                            $('<div class="progress">\
+    <div class="progress-bar progress-bar-striped" id="progress-bar" role="progressbar"aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div></div>').insertAfter('.input-group');
+                        }
+                        $('#progress-bar').css({'width': progressData.percent * 100 + "%"});
                     }
-                    $('#progress-bar').css({'width': progressData.percent * 100 + "%"});
-                }
-            }, function(err, data) {
-                if (data.statusCode == 200) {
-                    $('.progress')[0].remove();
-                    return
-                }
-            });
+                }, function(err, data) {
+                    if (data.statusCode == 200) {
+                        $('.progress')[0].remove();
+                        return
+                    }
+                });
+            }
         }
         function listObj() {
             cos.getBucket({
