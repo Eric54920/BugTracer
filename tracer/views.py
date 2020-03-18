@@ -62,7 +62,7 @@ class RegisterForm(forms.ModelForm):
 def register(request):
     if request.method == 'GET':
         registerForm = RegisterForm()
-        return render(request, 'register.html', {'form': registerForm})
+        return render(request, 'tracer/register.html', {'form': registerForm})
     else:
         form = RegisterForm(data=request.POST)
         code = request.POST.get('code')
@@ -76,9 +76,9 @@ def register(request):
             if form.is_valid():
                 form.save()
                 return HttpResponse('ok')
-            return render(request, 'register.html', {'form': form})
+            return render(request, 'tracer/register.html', {'form': form})
         else:
             return HttpResponse('验证码错误')
 
 def upLoad(request):
-    return render(request, 'upload.html')
+    return render(request, 'tracer/upload.html')

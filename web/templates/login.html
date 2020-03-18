@@ -1,0 +1,55 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}用户账号密码登录{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1>用户账号密码登录</h1>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if field.name == 'code' %}
+                            <div class="form-group code">
+                                <label for="email">验证码</label>
+                                <input type="text" class="form-control" name="code" placeholder="{% if field.errors.0 %}{{ field.errors.0 }}{% else %}请输入验证码{% endif %}">
+                                <span id="img-code" class="img-code">
+                                    <img src="{% url 'web:image_code' %}" id="imageCode" title="点击更换图片">
+                                </span>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                <span>{{ field.errors.0 }}</span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary btn-block">登 录</button>
+                </form>
+                <a type="button" class="btn btn-link"  style="float: right;" href="{% url 'web:login_sms' %}">短信验证码登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function() {
+        $(function () {
+            $('#imageCode').click(function () {
+                var oldSrc = $(this).attr('src');
+                $(this).attr('src', oldSrc + "?");
+            })
+        })
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}管理中心{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    .content {
+        padding-top: 20px;
+    }
+    .form-group ul {
+        display: flex;
+        padding: 0;
+        justify-content: space-between;
+        border: none;
+        list-style: none;
+    }
+    .form-group ul li {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        box-shadow: 0 0 0px 2px #ececec;
+    }
+    #id_color input {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1px solid #333;
+    }
+    .error-msg {
+        color: red;
+    }
+    .star-project, .my-project, .part-project {
+        margin-top: 20px;
+    }
+    .star-project .fa-star {
+        color: #007bff;
+    }
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .bg {
+        width: 100%;
+        height: 150px;
+    }
+    .bg .title {
+        line-height: 150px;
+        text-align: center;
+        font-size: 16px;
+        color: #333;
+    }
+    .item {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 6px 0px #ababab;
+        background-color: #fff;
+        overflow: hidden;
+    }
+    .item-desc {
+        display: flex;
+        margin: 10px 10px;
+        justify-content: space-between;
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% load tags %}
+
+<div class="content">
+    <div class="container">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+            <i class="fa fa-plus"></i> 创建项目
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">创建项目</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <form>
+                {% for field in form %}
+                    {% if field.name == 'color' %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <ul id="id_color">
+                            <li style="background: #FFDAB9" data="1"></li>
+                            <li style="background: #00E5EE" data="2"></li>
+                            <li style="background: #E6E6FA" data="3"></li>
+                            <li style="background: #8470FF" data="4"></li>
+                            <li style="background: #FF6A6A" data="5"></li>
+                            <li style="background: #00BFFF" data="6"></li>
+                        </ul>
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                    {% else %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <span class="error-msg">{{ field.errors.0 }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-create" class="btn btn-primary">创建</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="star-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-star"></i> 星标项目
+                </div>
+                <div class="card-body">
+                    {% for project in my_projects %}
+                        {% if project.is_star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="{% bgc project.get_color_display %}"><p class="title">{{ project.title }}</p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="my"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-user"></i> {{ project.member_num }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% for project in projects %}
+                        {% if project.is_star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="{% bgc project.get_color_display %}"><p class="title">{{ project.title }}</p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="part"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-user"></i> {{ project.member_num }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="my-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-navicon"></i> 我创建的项目
+                </div>
+                <div class="card-body">
+                    {% for project in my_projects %}
+                        {% if not project.is_star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="{% bgc project.get_color_display %}"><p class="title">{{ project.title }}</p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="my"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-user"></i> {{ project.member_num }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="part-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-handshake-o"></i> 我参与的项目
+                </div>
+                <div class="card-body">
+                    {% for project in projects %}
+                        {% if not project.is_star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="{% bgc project.get_color_display %}"><p class="title">{{ project.title }}</p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="part"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-user"></i> {{ project.member_num }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function () {
+        btnLst = $('.form-group ul li');
+        $.each(btnLst, function(i) {
+            $(btnLst[i]).click(function () {
+                $(btnLst[i]).siblings().attr({'checked': false});
+                $(btnLst[i]).siblings().css({'box-shadow': '0 0 0px 2px #ececec'});
+                $(btnLst[i]).attr({'checked': true});
+                $(btnLst[i]).css({'box-shadow': '0 0 0px 2px #007bff'});
+                console.log($(btnLst[i]).attr('data'))
+            })
+        })
+
+
+        /* 创建项目 */
+        $('#btn-create').click(function() {
+            $.ajax({
+                url: "{% url 'web:create_project' %}",
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    "title": $('#id_title').val(),
+                    "color": $('.form-group ul li[checked="checked"]').attr('data'),
+                    "desc": $('#id_desc').val(),
+                    "csrfmiddlewaretoken": $("[name='csrfmiddlewaretoken']").val() 
+                },
+                success: function (res) {
+                    if (res.status) {
+                        console.log(res)
+                        $('#staticBackdrop').modal('hide')
+                    } else {
+                        $.each(res.error, function (key, value) {
+                            for (let k in value) {
+                                $("#id_" + k).next("span").text(value[k]);
+                            }
+                        })
+                    }
+                },
+                error: function (err) {
+                    
+                }
+            })
+        })
+
+        /* 取消星标项目 */
+        let star_projects = $('.star-project .item-desc .fa-star');
+        $.each(star_projects, function(i) {
+            $(star_projects[i]).click(function () {
+                $.ajax({
+                    url: "{% url 'web:star' %}",
+                    type: 'GET',
+                    data: {
+                        id: $(star_projects[i]).attr('data'),
+                        belong: $(star_projects[i]).attr('belong'),
+                        type: 'cancel'
+                    },
+                    success: function (res) {
+                        console.log(res)
+                        location.href = res.url;
+                    }
+                })
+            });
+        })
+
+
+        /* 添加星标 */
+        let nostar_projects = $('.my-project .item-desc .fa-star, .part-project .item-desc .fa-star');
+        console.log($(nostar_projects))
+        $.each(nostar_projects, function(i) {
+            $(nostar_projects[i]).click(function () {
+                $.ajax({
+                    url: "{% url 'web:star' %}",
+                    type: 'GET',
+                    data: {
+                        id: $(nostar_projects[i]).attr('data'),
+                        belong: $(nostar_projects[i]).attr('belong'),
+                        type: 'add'
+                    },
+                    success: function (res) {
+                        console.log(res.url)
+                        location.href = res.url;
+                    }
+                })
+            });
+        })
+    })
+</script>
+{% endblock %}
