@@ -1,0 +1,123 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'plugin/editor-md/css/editormd.min.css' %}" />
+<style>
+.wiki {
+    margin-top: 20px;
+}
+.wiki-title {
+    display: flex;
+    justify-content: space-between;
+}
+.wiki-content {
+    display: flex;
+    padding: 0;
+    min-height: 500px;
+}
+.wiki-left {
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+.wiki-right {
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    margin-left: -1px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wiki">
+    <div class="container">
+        <div class="card">
+            <div class="card-header wiki-title">
+                <div>
+                    <i class="fa fa-book"></i> Wiki 文档
+                </div>
+                <div>
+                    <a class="btn btn-success btn-sm" href="#"><i class="fa fa-plus-circle"></i> 创建文章</a>
+                </div>
+            </div>
+            <div class="card-body wiki-content">
+                <div class="col-sm-3 wiki-left">
+                <ul id="catalog">
+                </ul>
+                </div>
+                <div class="col-sm-9 wiki-right">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.name == 'content' %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div id="editor">{{ field }}</div>
+                                <span class="error-msg">{{ field.errors.0 }}</span>
+                            </div>
+                            {% else %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                <span class="error-msg">{{ field.errors.0 }}</span>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">提 交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugin/editor-md/editormd.min.js' %}"></script>
+    <script>
+
+        // http://127.0.0.1:8002/manage/2/wiki/detail/
+        var WIKI_DETAIL_URL = "{% url 'web:wiki' project_id=request.tracer.project.id %}";
+        var WIKI_UPLOAD_URL = "{% url 'web:wiki_upload' project_id=request.tracer.project.id %}";
+
+        $(function () {
+
+            initCatalog();
+            initEditor();
+        });
+
+        function initCatalog() {
+            $.ajax({
+                url: "{% url 'web:wiki_catalog' project_id=request.tracer.project.id %}",
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        $.each(res.data, function (index, item) {
+                            var href = WIKI_DETAIL_URL + "?wiki_id=" + item.id;
+                            var li = $("<li>").attr('id', "id_" + item.id).append( $('<a>').text(item.title).attr('href',href)  ).append($('<ul>'));
+
+                            if (!item.parent_id) {
+                                // 添加到catalog中
+                                $('#catalog').append(li);
+                            } else {
+                                $("#id_" + item.parent_id).children('ul').append(li);
+                            }
+                        })
+                    } else {
+                        alert("初始化目录失败");
+                    }
+                }
+            })
+        }
+        function initEditor () {
+            editormd("editor", {
+                placeholder: "请输入内容",
+                height: 500,
+                path: "{% static 'plugin/editor-md/lib/' %}",
+                imageUpload:true,
+                imageFormats:["jpg",'jpeg','png','gif'],
+                imageUploadURL:WIKI_UPLOAD_URL
+            });
+        }
+    </script>
+{% endblock %}

@@ -7,7 +7,7 @@ from utils.tencent.sms import send_sms_single
 from web.forms.account import RegisterForm, SendSmsForm, LoginSMSForm, LoginForm
 from django_redis import get_redis_connection
 from web import models
-import time
+import datetime
 from utils.image_code import check_code
 from django.db.models import Q
 import uuid
@@ -27,9 +27,24 @@ def register(request):
         return render(request, 'register.html', {'form': registerForm})
     form = RegisterForm(data=request.POST)
     if form.is_valid():
-        user = form.save()
-        order = str(uuid.uuid4())
-        models.TransactionRecord.objects.create(status=1, user=user, price_strategy_id=1, actual_payment=0, end_time="9999-12-1 00:00:00", number=0, order=order)
+        # 验证通过，写入数据库（密码要是密文）
+        # instance = form.save，在数据库中新增一条数据，并将新增的这条数据赋值给instance
+
+        # 用户表中新建一条数据（注册）
+        instance = form.save()
+
+        # 创建交易记录
+        # 方式一
+        policy_object = models.PricePolicy.objects.filter(category=1, title="个人免费版").first()
+        models.Transaction.objects.create(
+            status=2,
+            order=str(uuid.uuid4()),
+            user=instance,
+            price_policy=policy_object,
+            count=0,
+            price=0,
+            start_datetime=datetime.datetime.now()
+        )
         return JsonResponse({'status': True, 'data': '/login/'})
     return JsonResponse({'status': False, 'error': form.errors})
 

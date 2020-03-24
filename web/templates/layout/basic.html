@@ -30,13 +30,13 @@
                 </ul>
                 <div class="form-inline my-2 my-lg-0">
                     <ul class="navbar-nav mr-auto">
-                        {% if request.tracer %}
+                        {% if request.tracer.user %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ request.tracer.username }}
+                            {{ request.tracer.user.username }}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'web:manage' %}">管理中心</a>
+                            <a class="dropdown-item" href="{% url 'web:project_list' %}">管理中心</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'web:logout' %}"><i class="fa fa-sign-out"></i> 退 出</a>
                             </div>

@@ -142,20 +142,15 @@ TENCENT_SMS_TEMPLATE = {
     'resetpwd': 552735
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379", # 安装redis的主机的 IP 和 端口
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {
-                "max_connections": 1000,
-                "encoding": 'utf-8'
-            },
-            "PASSWORD": "" # redis密码
-        }
-    }
-}
+# ########### 登录白名单：无需登录就可以访问的页面 ###########
+WHITE_REGEX_URL_LIST = [
+    "/send/sms/",
+    "/register/",
+    "/login/",
+    "/login/sms/",
+    "/image/code/",
+    "/index/",
+]
 
 try:
     from .local_settings import *
