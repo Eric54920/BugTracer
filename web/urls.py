@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import account, home, project, manage, wiki
+from .views import account, home, project, manage, wiki, file, setting, issues
 
 urlpatterns = [
     url(r'^send/sms/', account.send_sms, name="send_sms"),
@@ -14,15 +14,26 @@ urlpatterns = [
     url(r'^star/$', project.star, name="star"),
     url(r'^manage/(?P<project_id>\d+)/', include([
         url(r'^dashboard/$', manage.dashboard, name='dashboard'),
-        url(r'^issues/$', manage.issues, name='issues'),
         url(r'^statistics/$', manage.statistics, name='statistics'),
-        url(r'^file/$', manage.file, name='file'),
+
+        url(r'^file/$', file.file, name='file'),
+        url(r'^file/delete/$', file.file_delete, name='file_delete'),
+        url(r'^cos/credential/$', file.cos_credential, name='cos_credential'),
+        url(r'^file/post/$', file.file_post, name='file_post'),
+        url(r'^file/download/(?P<file_id>\d+)/$', file.file_download, name='file_download'),
+
         url(r'^wiki/$', wiki.wiki, name='wiki'),
         url(r'^wiki/add/$', wiki.wiki_add, name='wiki_add'),
         url(r'^wiki/catalog/$', wiki.wiki_catalog, name='wiki_catalog'),
         url(r'^wiki/delete/(?P<wiki_id>\d+)/$', wiki.wiki_delete, name='wiki_delete'),
         url(r'^wiki/edit/(?P<wiki_id>\d+)/$', wiki.wiki_edit, name='wiki_edit'),
         url(r'^wiki/upload/$', wiki.wiki_upload, name='wiki_upload'),
-        url(r'^setting/$', manage.setting, name='setting'),
+
+        url(r'^setting/$', setting.setting, name='setting'),
+        url(r'^setting/delete/$', setting.delete, name='setting_delete'),
+
+        url(r'^issues/$', issues.issues, name='issues'),
+        url(r'^issues/detail/(?P<issues_id>\d+)/$', issues.issues_detail, name='issues_detail'),
+        url(r'^issues/record/(?P<issues_id>\d+)/$', issues.issues_record, name='issues_record'),
     ], None, None)),
 ]
