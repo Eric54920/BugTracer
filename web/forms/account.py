@@ -81,7 +81,7 @@ class RegisterForm(BootStrapForm, forms.ModelForm):
 
     def clean_code(self):
         code = self.cleaned_data['code']
-        mobile_phone = self.cleaned_data['mobile_phone']
+        mobile_phone = self.cleaned_data.get('mobile_phone')
         conn = get_redis_connection()
         redis_code = conn.get(mobile_phone)
         if not redis_code:
@@ -93,11 +93,9 @@ class RegisterForm(BootStrapForm, forms.ModelForm):
 
 class LoginSMSForm(BootStrapForm, forms.Form):
     mobile_phone = forms.CharField(label="手机号",widget=forms.NumberInput(), validators=[RegexValidator(r'^(1[3|4|5|6|7|8|9])\d{9}$', '手机号格式错误'), ])
-    # code = forms.CharField(label='验证码', widget=forms.TextInput())
     
     def clean_mobile_phone(self):
         mobile_phone = self.cleaned_data['mobile_phone']
-        # exists = models.UserInfo.objects.filter(mobile_phone=mobile_phone).exists()
         user_obj = models.UserInfo.objects.filter(mobile_phone=mobile_phone).first()
         if not user_obj:
             raise ValidationError('手机号不存在')
@@ -176,6 +174,7 @@ class SendSmsForm(forms.Form):
         # 生成验证码
         code = random.randrange(1000, 9999)
         print(code)
+        #TODO 放开
         # 发送短信
         # sms = send_sms_single(mobile_phone, template_id, [code, ])
         # if sms['result'] != 0:

@@ -4,7 +4,6 @@ from web import models
 
 register = Library()
 
-
 @register.simple_tag
 def string_just(num):
     if num < 100:

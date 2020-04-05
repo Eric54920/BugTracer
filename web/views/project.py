@@ -22,7 +22,8 @@ def project_list(request):
     form = ProjectModelForm(request, data=request.POST)
     if form.is_valid():
         name = form.cleaned_data['name']
-        bucket = "{}-{}-{}-{}".format(name, request.tracer.user.mobile_phone, str(int(time.time())), settings.TENCENT_COS_APPID)
+        # bucket = "{}-{}-{}-{}".format(name, request.tracer.user.mobile_phone, str(int(time.time())), settings.TENCENT_COS_APPID)
+        bucket = "{}-{}-1251317460".format(request.tracer.user.mobile_phone, str(int(time.time())))
         create_bucket(bucket, settings.TENCENT_COS_REGION)
 
         # 验证通过：项目名、颜色、描述 + creator谁创建的项目？
@@ -39,7 +40,6 @@ def project_list(request):
         models.IssuesType.objects.bulk_create(issues_type_object_list)
         
         return JsonResponse({'status': True})
-
     return JsonResponse({'status': False, 'error': form.errors})
 
 def star(request):

@@ -150,6 +150,7 @@ WHITE_REGEX_URL_LIST = [
     "/login/sms/",
     "/image/code/",
     "/index/",
+    "/price/"
 ]
 
 try:

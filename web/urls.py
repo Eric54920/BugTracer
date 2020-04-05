@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import account, home, project, manage, wiki, file, setting, issues
+from .views import account, home, project, wiki, file, setting, issues, dashboard, statistics
 
 urlpatterns = [
     url(r'^send/sms/', account.send_sms, name="send_sms"),
@@ -11,11 +11,13 @@ urlpatterns = [
     url(r'^index/$', home.index, name="index"),
     url(r'^project/list/$', project.project_list, name='project_list'),
 
+    url(r'^price/$', home.price, name='price'),
+    url(r'^payment/(?P<policy_id>\d+)/$', home.payment, name='payment'),
+    url(r'^pay/$', home.pay, name='pay'),
+    url(r'^pay/notify/$', home.pay_notify, name='pay_notify'),
+
     url(r'^star/$', project.star, name="star"),
     url(r'^manage/(?P<project_id>\d+)/', include([
-        url(r'^dashboard/$', manage.dashboard, name='dashboard'),
-        url(r'^statistics/$', manage.statistics, name='statistics'),
-
         url(r'^file/$', file.file, name='file'),
         url(r'^file/delete/$', file.file_delete, name='file_delete'),
         url(r'^cos/credential/$', file.cos_credential, name='cos_credential'),
@@ -35,5 +37,15 @@ urlpatterns = [
         url(r'^issues/$', issues.issues, name='issues'),
         url(r'^issues/detail/(?P<issues_id>\d+)/$', issues.issues_detail, name='issues_detail'),
         url(r'^issues/record/(?P<issues_id>\d+)/$', issues.issues_record, name='issues_record'),
+        url(r'^issues/change/(?P<issues_id>\d+)/$', issues.issues_change, name='issues_change'),
+        url(r'^issues/invite/url/$', issues.invite_url, name='invite_url'),
+
+        url(r'^dashboard/$', dashboard.dashboard, name='dashboard'),
+        url(r'^dashboard/issues/chart/$', dashboard.issues_chart, name='issues_chart'),
+
+        url(r'^statistics/$', statistics.statistics, name='statistics'),
+        url(r'^statistics/priority/$', statistics.statistics_priority, name='statistics_priority'),
+        url(r'^statistics/project/user/$', statistics.statistics_project_user, name='statistics_project_user'),
     ], None, None)),
+    url(r'^invite/join/(?P<code>\w+)/$', issues.invite_join, name='invite_join'),
 ]
