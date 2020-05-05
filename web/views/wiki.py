@@ -76,8 +76,8 @@ def wiki_upload(request, project_id):
     if not image_object:
         result['message'] = '文件不存在'
         return JsonResponse(result)
-    ext = image_object.name.rstrip('.')[-1]
-    key = "{}.{}".format(uid(request.tracer.user.mobile_phone), ext)
+    ext = image_object.name.rstrip('.')[-1] # 取到后缀
+    key = "{}.{}".format(uid(request.tracer.user.mobile_phone), ext) # 文件名
     image_url = upload_file(
         request.tracer.project.bucket,
         request.tracer.project.region,

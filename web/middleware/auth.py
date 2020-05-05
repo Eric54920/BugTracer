@@ -5,7 +5,7 @@ from django.conf import settings
 import datetime
 
 class Tracer(object):
-    def __inti__(self):
+    def __init__(self):
         self.user = None
         self.price_policy = None
         self.project = None

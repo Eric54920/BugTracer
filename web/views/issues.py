@@ -142,7 +142,6 @@ def issues(request, project_id):
         form.instance.creator = request.tracer.user
         form.save()
         return JsonResponse({'status': True})
-
     return JsonResponse({'status': False, 'error': form.errors})
 
 def issues_detail(request, project_id, issues_id):
@@ -151,13 +150,11 @@ def issues_detail(request, project_id, issues_id):
     form = IssuesModelForm(request, instance=issues_object)
     return render(request, 'issues_detail.html', {'form': form, "issues_object": issues_object})
 
-
 @csrf_exempt
 def issues_record(request, project_id, issues_id):
     """ 初始化操作记录 """
 
     # 判断是否可以评论和是否可以操作这个问题
-
     if request.method == "GET":
         reply_list = models.IssuesReply.objects.filter(issues_id=issues_id, issues__project=request.tracer.project)
         # 将queryset转换为json格式
@@ -172,7 +169,6 @@ def issues_record(request, project_id, issues_id):
                 'parent_id': row.reply_id
             }
             data_list.append(data)
-
         return JsonResponse({'status': True, 'data': data_list})
 
     form = IssuesReplyModelForm(data=request.POST)
@@ -189,7 +185,6 @@ def issues_record(request, project_id, issues_id):
             'datetime': instance.create_datetime.strftime("%Y-%m-%d %H:%M"),
             'parent_id': instance.reply_id
         }
-
         return JsonResponse({'status': True, 'data': info})
     return JsonResponse({'status': False, 'error': form.errors})
 
@@ -331,9 +326,7 @@ def issues_change(request, project_id, issues_id):
             issues_object.attention.set(value)
             issues_object.save()
             change_record = "{}更新为{}".format(field_object.verbose_name, ",".join(username_list))
-
         return JsonResponse({'status': True, 'data': create_reply_record(change_record)})
-
     return JsonResponse({'status': False, 'error': "滚"})
 
 def invite_url(request, project_id):

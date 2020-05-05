@@ -6,8 +6,6 @@ from django.conf import settings
 from utils.tencent.cos import create_bucket
 import time
 
-
-
 def project_list(request):
     """ 项目列表 """
     if request.method == "GET":

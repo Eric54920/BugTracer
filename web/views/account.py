@@ -35,7 +35,8 @@ def register(request):
 
         # 创建交易记录
         # 方式一
-        policy_object = models.PricePolicy.objects.filter(category=1, title="个人免费版").first()
+        policy_object = models.PricePolicy.objects.filter(category=1, title="普通用户").first()
+        print(instance, policy_object)
         models.Transaction.objects.create(
             status=2,
             order=str(uuid.uuid4()),

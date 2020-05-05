@@ -7,7 +7,6 @@ from web import models
 
 def statistics(request, project_id):
     """ 统计页面"""
-
     return render(request, 'statistics.html')
 
 

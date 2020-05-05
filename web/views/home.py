@@ -21,7 +21,7 @@ def price(request):
 
 
 def payment(request, policy_id):
-    """ 支付页面"""
+    """ 购买套餐支付页面"""
     # 1. 价格策略（套餐）policy_id
     policy_object = models.PricePolicy.objects.filter(id=policy_id, category=2).first()
     if not policy_object:

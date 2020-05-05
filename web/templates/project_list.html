@@ -250,7 +250,6 @@
                 data: $('#addForm').serialize(),
                 dataType: "JSON",
                 success: function (res) {
-                    console.log(res);
                     if (res.status) {
                         location.href = location.href;
                         // location.reload()
@@ -276,7 +275,6 @@
                         type: 'cancel'
                     },
                     success: function (res) {
-                        console.log(res)
                         location.href = res.url;
                     }
                 })
@@ -298,7 +296,6 @@
                         type: 'add'
                     },
                     success: function (res) {
-                        console.log(res.url)
                         location.href = res.url;
                     }
                 })

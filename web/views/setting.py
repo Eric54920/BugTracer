@@ -28,5 +28,4 @@ def delete(request, project_id):
 
     delete_bucket(request.tracer.project.bucket, request.tracer.project.region)
     models.Project.objects.filter(id=request.tracer.project.id).delete()
-
     return redirect("web:project_list")

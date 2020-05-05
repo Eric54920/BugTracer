@@ -195,7 +195,6 @@ def file_post(request, project_id):
             # 'file_type': instance.get_file_type_display()
         }
         return JsonResponse({'aa':123, 'status': True, 'data': result})
-
     return JsonResponse({'status': False, 'data': "文件错误"})
 
 def file_download(request, project_id, file_id):

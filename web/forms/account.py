@@ -176,9 +176,9 @@ class SendSmsForm(forms.Form):
         print(code)
         #TODO 放开
         # 发送短信
-        # sms = send_sms_single(mobile_phone, template_id, [code, ])
-        # if sms['result'] != 0:
-        #     raise ValidationError("短信发送失败，{}".format(sms['errmsg']))
+        sms = send_sms_single(mobile_phone, template_id, [code, ])
+        if sms['result'] != 0:
+            raise ValidationError("短信发送失败，{}".format(sms['errmsg']))
 
         # 验证码 写入redis（django-redis）
         conn = get_redis_connection()
