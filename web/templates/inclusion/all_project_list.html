@@ -1,0 +1,21 @@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        项目 {% if request.tracer.project %} ({{ request.tracer.project.name }}) {% endif %}
+    </a>
+    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        {% if my %}
+        <a class="dropdown-item" href="javascript:;">我创建的项目</a>
+            {% for item in my %}
+            <a class="dropdown-item" href="{% url 'web:dashboard' project_id=item.id %}">{{ item.name }}</a>
+            {% endfor %}
+        {% endif %}
+        <div class="dropdown-divider"></div>
+        {% if join %}
+        <a class="dropdown-item" href="javascript:;">我参与的项目</a>
+            {% for item in join %}
+        <a class="dropdown-item" href="{% url 'web:dashboard' project_id=item.project.id %}">{{ item.project.name }}</a>
+            {% endfor %}
+        {% endif %}
+        <a class="dropdown-item" href="{% url 'web:project_list' %}">有所项目</a>
+    </div>
+</li>

@@ -1,0 +1,37 @@
+.card {
+    width: 400px;
+    margin: 50px auto 0;
+    -webkit-box-shadow: 5px 10px 10px rgba(0, 0, 0, .05);
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, .05);
+}
+.card .card-body h1 {
+    margin-bottom: 40px;
+}
+.form-group {
+    position: relative;
+}
+.form-group > span {
+    font-size: 14px;
+    color: brown;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+}
+.form-group .code-btn {
+    position: absolute;
+    height: 30px;
+    right: 4px;
+    font-size: 14px;
+    top: 36px;
+    color: #007aff;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 0;
+    outline: none;
+    background-color: #c5e1ff;
+}
+.form-group img {
+    position: absolute;
+    right: 0px;
+    top: -4px;
+}

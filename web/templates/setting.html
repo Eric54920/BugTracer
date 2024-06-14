@@ -1,0 +1,29 @@
+{% extends 'layout/manage.html' %}
+
+
+{% block content %}
+<div style="margin-top: 20px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card bg-light mb-3">
+                    <div class="card-header"><span><i class="fa fa-user"></i> 个人中心</span></div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-center"><a href="#">我的资料</a></li>
+                        <li class="list-group-item text-center"><a href="#">修改密码</a></li>
+                        <li class="list-group-item text-center"><a href="{% url 'web:setting_delete'  project_id=request.tracer.project.id %}">删除项目</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="card bg-light mb-3">
+                    <div class="card-header"><span><i class="fa fa-address-card-o" aria-hidden="true"></i> 我的资料</span></div>
+                    <ul class="list-group list-group-flush">
+                        <h4 class="text-center">系统设置</h4>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

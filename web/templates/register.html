@@ -1,0 +1,108 @@
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %}用户注册{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/account.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1>注册</h1>
+                <form id="regForm" method="post" action="#" class="form" autocomplete="false" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if field.name == 'mobile_phone' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span>{{ field.errors.0 }}</span>
+                        </div>
+                        {% else %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span>{{ field.errors.0 }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="form-group code">
+                        <label for="email">验证码</label>
+                        <input type="text" class="form-control" name="code" placeholder="请输入验证码">
+                        <button type="button" id="code-btn" class="code-btn">获取验证码</button>
+                    </div>
+                    <button id="btn-reg" type="button" class="btn btn-primary btn-block">注 册</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+        $(function() {
+            $('#code-btn').click(function(){
+                mobile = $('#id_mobile_phone').val();
+                $.ajax({
+                    url: "{% url 'web:send_sms' %}",
+                    type: 'get',
+                    dataType: "JSON", // 将服务端返回的数据反序列化为字典
+                    data: {
+                        tpl: "register",
+                        mobile_phone: mobile
+                    },
+                    success: function(res) {
+                        if (res.status) {
+                            sendSmsRemind();
+                        } else {
+                            $.each(res.error, function(key, value) {
+                                $('#id_' + key).next().text(value[0]);
+                            })
+                        }
+                    },
+                    error: function(err) {
+                        console.log('err '+err);
+                    }
+                });
+            });
+
+            function sendSmsRemind() {
+                let smsBtn = $('#code-btn');
+                smsBtn.prop('disabled', true);
+                let time = 60;
+                let remind = setInterval(function () {
+                    smsBtn.text(time + '秒重新发送');
+                    time --;
+                    if (time < 1) {
+                        clearInterval(remind);
+                        smsBtn.text('点击获取验证码');
+                        smsBtn.prop('disabled', false);
+                    }
+                }, 1000);
+            }
+
+            $('#btn-reg').click(function () {
+                $.ajax({
+                    url: "{% url 'web:register' %}",
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: $('#regForm').serialize(),
+                    success: function(res) {
+                        if (res.status) {
+                            location.href = res.data
+                        } else {
+                            $.each(res.error, function (key, value) {
+                                $("#id_" + key).next().text(value[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        });
+    </script>
+{% endblock %}

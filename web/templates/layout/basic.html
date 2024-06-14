@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'plugin/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'font/css/font-awesome.min.css' %}">
+    {% block css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Bug管理系统</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">产品功能</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">企业方案</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">帮助文档</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'web:price' %}">价格</a>
+                    </li>
+                </ul>
+                <div class="form-inline my-2 my-lg-0">
+                    <ul class="navbar-nav mr-auto">
+                        {% if request.tracer.user %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ request.tracer.user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'web:project_list' %}">管理中心</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'web:logout' %}"><i class="fa fa-sign-out"></i> 退 出</a>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'web:login' %}"><i class="fa fa-sign-in"></i> 登 录</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'web:register' %}"><i class="fa fa-user-circle"></i> 注 册</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'plugin/js/bootstrap.min.js' %}"></script>
+    {% block js %}{% endblock %}
+</body>
+</html>

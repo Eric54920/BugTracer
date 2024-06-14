@@ -1,0 +1,48 @@
+{% extends 'layout/manage.html' %}
+{% block css %}
+    <style>
+        .choose {
+            border-left: 2px solid #f90 !important;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div style="margin-top: 20px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="card bg-light">
+                    <div class="card-header"><span><i class="fa fa-user"></i> 个人中心</span></div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-center"><a href="#">我的资料</a></li>
+                        <li class="list-group-item text-center"><a href="#">修改密码</a></li>
+                        <li class="list-group-item text-center choose"><a href="{% url 'web:setting_delete'  project_id=request.tracer.project.id %}">删除项目</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-sm-9">
+                <div class="card bg-light">
+                    <div class="card-header"><span><i class="fa fa-address-card-o" aria-hidden="true"></i> 我的资料</span></div>
+                    <ul class="list-group list-group-flush">
+                        <form class="form-horizontal" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">项目名</label>
+                                <div class="col-sm-5">
+                                    <input type="text" class="form-control" placeholder="请输入项目名称" name="project_name">
+                                    <span class="error-msg">{{ error }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-5">
+                                    <input type="submit" class="btn btn-danger" value="删 除">
+                                </div>
+                            </div>
+                        </form>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/css/bootstrap.css" rel="stylesheet">
+    <style>
+        .account {
+            width: 400px;
+            margin: 100px auto 0;
+        }
+        .form-group {
+            position: relative;
+        }
+        .form-group > span {
+            font-size: 14px;
+            color: brown;
+            position: absolute;
+            right: 10px;
+            top: 39px;
+        }
+        .form-group .code-btn {
+            position: absolute;
+            right: 10px;
+            top: 39px;
+            color: #007bff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="account">
+        <h1>注册</h1>
+        <form method="post" action="#" class="form" autocomplete="false" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == 'mobile_phone' %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+                    <span>{{ field.errors.0 }}</span>
+                </div>
+                {% else %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+                    <span>{{ field.errors.0 }}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+            <div class="form-group code">
+                <label for="email">验证码</label>
+                <input type="text" class="form-control" name="code" placeholder="请输入验证码">
+                <span class="code-btn">获取验证码</span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">注册</button>
+        </form>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(function() {
+            $('.code-btn').click(function(){
+                mobile = document.getElementsByName('mobile_phone')[0]
+                $.ajax({
+                    url: 'http://127.0.0.1:8002/tracer/send/sms/?tpl=register&mobile='+mobile.value,
+                    type: 'get',
+                    success: function(res) {
+                        if (res['status'] == 200) {
+                            console.log(res['time'])
+                            window.localStorage.setItem("send_time", Math.round(res.time));  // 设置发送短信的时间
+                            let timer = window.setInterval(function() {
+                                let d = new Date();
+                                curr_time = d.getTime() / 1000; // 当前时间
+                                lost_time = curr_time - localStorage.getItem("send_time");  // 过去秒数
+                                has_time = 60 - lost_time;   // 剩余时间
+                                if (has_time <= 0) {
+                                    window.clearInterval(timer);
+                                    $('.code-btn')[0].innerHTML = "获取验证码";
+                                } else {
+                                    $('.code-btn')[0].innerHTML = '剩余' + Math.round(has_time) + '秒';
+                                }
+                            },1000);
+                            return
+                        } else {
+                            console.log('400 '+ res.err)
+                        }
+                    },
+                    error: function(err) {
+                        console.log('err '+err);
+                    }
+                });
+            });
+
+            function showtime() {
+                let d = new Date();  // 1584017598436
+                if ((d.getTime() / 1000) - localStorage.getItem("send_time") > 60) {  // 1584017598436/1000 - 1584017598
+                    console.log((d.getTime() / 1000) - localStorage.getItem("send_time"))
+                    localStorage.removeItem('send_time')
+                    return
+                }
+                let timer = window.setInterval(function() {
+                    let d = new Date();
+                    curr_time = d.getTime() / 1000; // 当前时间
+                    lost_time = curr_time - localStorage.getItem("send_time");  // 过去秒数
+                    has_time = 60 - lost_time;   // 剩余时间
+                    if (has_time <= 0) {
+                        window.clearInterval(timer);
+                        $('.code-btn')[0].innerHTML = "获取验证码";
+                    } else {
+                        $('.code-btn')[0].innerHTML = '剩余' + Math.round(has_time) + '秒';
+                    }
+                },1000);
+            }
+            showtime();
+        });
+    </script>
+</body>
+</html>

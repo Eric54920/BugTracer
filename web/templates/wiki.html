@@ -1,0 +1,122 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/content.css' %}">
+<style>
+.wiki {
+    margin-top: 20px;
+}
+.wiki-title {
+    display: flex;
+    justify-content: space-between;
+}
+.wiki-content {
+    display: flex;
+    padding: 0;
+    min-height: 500px;
+}
+.wiki-left {
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+#catalog {
+    padding: 0;
+}
+.wiki-right {
+    padding: 20px;
+    border-left: 1px solid #ddd;
+    margin-left: -1px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wiki">
+    <div class="container">
+        <div class="card">
+            <div class="card-header wiki-title">
+                <div>
+                    <i class="fa fa-book"></i> Wiki 文档
+                </div>
+                <div>
+                    <a class="btn btn-success btn-sm" href="{% url 'web:wiki_add' project_id=request.tracer.project.id %}"><i class="fa fa-plus-circle"></i> 创建</a>
+                    {% if wiki_object %}
+                    <a class="btn btn-primary btn-sm" href="{% url 'web:wiki_edit' project_id=request.tracer.project.id wiki_id=wiki_object.id %}"><i class="fa fa-edit"></i> 编辑</a>
+                    <a class="btn btn-danger btn-sm" href="{% url 'web:wiki_delete' project_id=request.tracer.project.id wiki_id=wiki_object.id %}"><i class="fa fa-trash"></i> 删除</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body wiki-content">
+                <div class="col-sm-3 wiki-left">
+                <ul id="catalog">
+                </ul>
+                </div>
+                <div class="col-sm-9 wiki-right">
+                    {% if wiki_object %}
+                        <div id="previewMarkdown">
+                            <textarea>{{ wiki_object.content }}</textarea>
+                        </div>
+                    {% else %}
+                    <div style="text-align: center;margin-top: 210px;">
+                        <h4>《{{ request.tracer.project.name }}》Wiki文档库</h4>
+                        <a class="btn btn-success btn-sm" href="{% url 'web:wiki_add' project_id=request.tracer.project.id %}"><i class="fa fa-plus-circle"></i> 创建文章</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugin/editor-md/editormd.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/marked.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/underscore.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/sequence-diagram.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'plugin/editor-md/lib/jquery.flowchart.min.js' %}"></script>
+    <script>
+
+        // http://127.0.0.1:8002/manage/2/wiki/detail/
+        var WIKI_DETAIL_URL = "{% url 'web:wiki' project_id=request.tracer.project.id %}";
+
+        $(function () {
+
+            initCatalog();
+            initPreivewMarkdown();
+
+        });
+        function initPreivewMarkdown() {
+            editormd.markdownToHTML("previewMarkdown", {
+                htmlDecode: "style,script,iframe"
+            });
+        }
+        function initCatalog() {
+            $.ajax({
+                url: "{% url 'web:wiki_catalog' project_id=request.tracer.project.id %}",
+                type: "GET",
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        $.each(res.data, function (index, item) {
+                            var href = WIKI_DETAIL_URL + "?wiki_id=" + item.id;
+                            var li = $("<li>").attr('id', "id_" + item.id).append( $('<a>').text(item.title).attr('href',href)  ).append($('<ul>'));
+
+                            if (!item.parent_id) {
+                                // 添加到catalog中
+                                $('#catalog').append(li);
+                            } else {
+                                $("#id_" + item.parent_id).children('ul').append(li);
+                            }
+                        })
+                    } else {
+                        alert("初始化目录失败");
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}

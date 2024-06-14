@@ -1,0 +1,306 @@
+{% extends 'layout/manage.html' %}
+{% load static %}
+
+{% block title %}管理中心{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+    .content {
+        padding-top: 20px;
+    }
+    .form-group ul {
+        display: flex;
+        height: 45px;
+        padding: 0;
+        margin: 0;
+        justify-content: space-between;
+        border: none;
+        list-style: none;
+    }
+    .form-group ul li {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        box-shadow: 0 0 0px 2px #ececec;
+    }
+    .form-group ul li label {
+        display: block;
+        width: 45px;
+        height: 45px;
+        background: blanchedalmond;
+        border-radius: 50%;
+        color: #fff0;
+    }
+    #id_color input {
+        display: none;
+        opacity: 0;
+    }
+    #id_color input::after {
+        display: block;
+        /* opacity: 0; */
+        content: " ";
+        {% comment %} background: #c55117; {% endcomment %}
+        width: 45px;
+        height: 45px;
+        z-index: 999;
+        border-radius: 50%;
+    }
+    .error-msg {
+        color: red;
+    }
+    .star-project, .my-project, .part-project {
+        margin-top: 20px;
+    }
+    .star-project .fa-star {
+        color: #007bff;
+    }
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .bg {
+        width: 100%;
+        height: 150px;
+    }
+    .bg .title {
+        line-height: 150px;
+        text-align: center;
+        font-size: 16px;
+        color: #333;
+    }
+    .item {
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 6px 0px #ababab;
+        background-color: #fff;
+        overflow: hidden;
+    }
+    .item-desc {
+        display: flex;
+        margin: 10px 10px;
+        justify-content: space-between;
+        color: #666;
+    }
+    #id_color {
+        display:flex;
+        justify-content: space-between;
+    }
+    .color-radio label {
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    .color-radio input[type="radio"] {
+        display: none;
+    }
+
+    .color-radio input[type="radio"] + .cycle {
+        display: inline-block;
+        height: 45px;
+        width: 45px;
+        border-radius: 50%;
+        border: 2px solid #dddddd;
+    }
+
+    .color-radio input[type="radio"]:checked + .cycle {
+        border: 2px solid black;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <div class="container">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+            <i class="fa fa-plus"></i> 创建项目
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">创建项目</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            <span class="error-msg"></span>
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" id="btn-create" class="btn btn-primary">创建</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="star-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-star"></i> 星标项目
+                </div>
+                <div class="card-body">
+                    {% for project in my_projects %}
+                        {% if project.star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="background-color: {{ project.get_color_display }};"><p class="title"><a href="{% url 'web:dashboard' project_id=project.id %}">{{ project.name }}</a></p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="my"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-group"></i> {{ project.join_count }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% for project in projects %}
+                        {% if project.star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="background-color: {{ project.get_color_display }};"><p class="title"><a href="{% url 'web:dashboard' project_id=project.id %}">{{ project.name }}</a></p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="part"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-group"></i> {{ project.member_num }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="my-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-navicon"></i> 我创建的项目
+                </div>
+                <div class="card-body">
+                    {% for project in my_projects %}
+                        {% if not project.star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="background-color: {{ project.get_color_display }};"><p class="title"><a href="{% url 'web:dashboard' project_id=project.id %}">{{ project.name }}</a></p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="my"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-group"></i> {{ project.join_count }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="part-project">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fa fa-handshake-o"></i> 我参与的项目
+                </div>
+                <div class="card-body">
+                    {% for project in projects %}
+                        {% if not project.is_star %}
+                        <div class="item" style="width: 19rem;">
+                            <div class="bg" style="background-color: {{ project.get_color_display }};"><p class="title"><a href="{% url 'web:dashboard' project_id=project.id %}">{{ project.name }}</a></p></div>
+                            <div class="item-body">
+                                <p class="item-desc">
+                                    <span><i class="fa fa-star" data={{ project.id }} belong="part"></i> {{ project.creator.username }} </span>
+                                    <span><i class="fa fa-group"></i> {{ project.join_count }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function () {
+        btnLst = $('.form-group ul li');
+        $.each(btnLst, function(i) {
+            $(btnLst[i]).click(function () {
+                $(btnLst[i]).siblings().css({'box-shadow': '0 0 0px 2px #ececec'});
+                $(btnLst[i]).css({'box-shadow': '0 0 0px 2px #007bff'});
+            })
+        })
+
+
+        /* 创建项目 */
+        $('#btn-create').click(function() {
+            $.ajax({
+                url: "{% url 'web:project_list' %}",
+                type: "POST",
+                data: $('#addForm').serialize(),
+                dataType: "JSON",
+                success: function (res) {
+                    if (res.status) {
+                        location.href = location.href;
+                        // location.reload()
+                    } else {
+                        $.each(res.error, function (key, value) {
+                            $("#id_" + key).next().text(value[0]);
+                        })
+                    }
+                }
+            })
+        })
+
+        /* 取消星标项目 */
+        let star_projects = $('.star-project .item-desc .fa-star');
+        $.each(star_projects, function(i) {
+            $(star_projects[i]).click(function () {
+                $.ajax({
+                    url: "{% url 'web:star' %}",
+                    type: 'GET',
+                    data: {
+                        id: $(star_projects[i]).attr('data'),
+                        belong: $(star_projects[i]).attr('belong'),
+                        type: 'cancel'
+                    },
+                    success: function (res) {
+                        location.href = res.url;
+                    }
+                })
+            });
+        })
+
+
+        /* 添加星标 */
+        let nostar_projects = $('.my-project .item-desc .fa-star, .part-project .item-desc .fa-star');
+        console.log($(nostar_projects))
+        $.each(nostar_projects, function(i) {
+            $(nostar_projects[i]).click(function () {
+                $.ajax({
+                    url: "{% url 'web:star' %}",
+                    type: 'GET',
+                    data: {
+                        id: $(nostar_projects[i]).attr('data'),
+                        belong: $(nostar_projects[i]).attr('belong'),
+                        type: 'add'
+                    },
+                    success: function (res) {
+                        location.href = res.url;
+                    }
+                })
+            });
+        })
+    })
+</script>
+{% endblock %}

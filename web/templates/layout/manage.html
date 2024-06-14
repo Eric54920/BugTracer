@@ -1,0 +1,55 @@
+{% load static %}
+{% load project %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'plugin/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'font/css/font-awesome.min.css' %}">
+    {% block css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'web:project_list' %}"><img style="width:100px" src="{% static 'images/index/logo-tracup.png' %}"></a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    {% all_project_list request %}
+
+                    {% if request.tracer.project %}
+                        {% manage_menu_list request %}
+                    {% endif %}
+                </ul>
+                <div class="form-inline my-2 my-lg-0">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item"><a class="nav-link" href="#">工作台</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">日历</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"> <i class="fa fa-bell-o" aria-hidden="true"></i> </a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"> <i class="fa fa-bookmark" aria-hidden="true"></i> </a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ request.tracer.user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'web:index' %}"> 官 网</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'web:logout' %}"><i class="fa fa-sign-out"></i> 退 出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% block content %}{% endblock %}
+
+
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.js"></script>
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'plugin/js/bootstrap.min.js' %}"></script>
+    {% block js %}{% endblock %}
+</body>
+</html>
